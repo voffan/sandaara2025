@@ -1,27 +1,37 @@
-from flask import Flask
-
-app = Flask(__name__)
+from settings import app
 
 @app.route("/")
 def index():
     return "Hello, world!"
 
-@app.route("/pets", methods=["GET"])
+@app.route("/pets", methods=["GET", "DELETE"])
 def pets_list():
     return "pets list"
 
-@app.route("/pets", methods=["POST"])
+@app.route("/petadd", methods=["GET", "POST"])
 def pet_add():
-    return "Pet has been added"
+    return "pet add"
 
-@app.route("/pets", methods=["PATCH"])
-def pet_update():
-    return "Pet has been updated"
+@app.route("/petedit", methods=["GET", "PATCH"])
+def pet_edit():
+    return "pet add"
 
-@app.route("/pets", methods=["DELETE"])
-def pet_update():
-    return "Pet has been deleted"
+@app.route("/petdonates", methods=["POST"])
+def pet_donates():
+    return "Pet donated"
 
-@app.route("/pet_donate", methods=["POST"])
-def pet_update():
-    return "Pet has been deleted"
+@app.route("/my_donates", methods=["GET"])
+def my_donates():
+    return "my dontes"
+
+@app.route("/login", methods=["POST"])
+def login():
+    return "logined"
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    return "logout"
+
+@app.route("/me", methods=["GET", "POST"])
+def my_profile():
+    return "my profile"
