@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <a href="{{ url_for('login') }}">Войти</a>
+    <a href="{{ url_for('admin.index') }}">Панель администратора</a>
+    <table id="pets">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Кличка</th>
+                <th>Вид</th>
+                <th>Владелец</th>
+                <th>Нужно</th>
+                <th>Фото</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pet in pets %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ pet.name }}</td>
+                <td>{{ pet.species.name }}</td>
+                <td>{{ pet.owner.fullname }}</td>
+                <td>{{ pet.needed }}</td>
+                <td> скоро будет </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

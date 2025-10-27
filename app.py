@@ -1,8 +1,13 @@
+from flask import render_template
+from data.models.pet import Pet
+from data.database import db
 from settings import app
+
 
 @app.route("/")
 def index():
-    return "Hello, world!"
+    pets = db.session.query(Pet).all()
+    return render_template('index.html', pets=pets)
 
 @app.route("/pets", methods=["GET", "DELETE"])
 def pets_list():
@@ -24,9 +29,9 @@ def pet_donates():
 def my_donates():
     return "my dontes"
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    return "logined"
+    return render_template('login.html')
 
 @app.route("/logout", methods=["POST"])
 def logout():
