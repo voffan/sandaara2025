@@ -1,7 +1,7 @@
 from typing import List, TYPE_CHECKING
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from data.models.basemodel import BaseModel
+from data.models.base import BaseModel
 
 if TYPE_CHECKING:    
     from data.models.pet import Pet
@@ -19,3 +19,6 @@ class User(BaseModel):
 
     pets:Mapped[List["Pet"]] = relationship("Pet", back_populates='owner')
     user_donates: Mapped[List["Donate"]] = relationship("Donate", back_populates='donator')
+
+    def __str__(self):
+        return self.fullname + ' ' + self.email
