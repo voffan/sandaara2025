@@ -1,7 +1,8 @@
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from data.models.pet import Pet
 from data.models.user import User
+from data.models.species import Species
 from data.database import db
 from settings import app, login_manager
 
@@ -12,32 +13,64 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
+    return redirect(url_for('pets_list'))
+
+@app.route("/pets", methods=["GET"])
+def pets_list():
     pets = db.session.query(Pet).all()
     return render_template('index.html', pets=pets)
 
-@app.route("/pets", methods=["GET", "DELETE"])
-def pets_list():
-    return "pets list"
+@app.route("/pet-delete/<int:id>", methods=["POST"])
+def pet_delete(id):
+    pet = db.session.query(Pet).filter(Pet.id == id).first()
+    if not pet:
+        abort(404)
+    if current_user.id != pet.owner_id:
+        abort(403)
+    db.session.delete(pet)
+    db.session.commit()
+    return redirect(url_for('pets_list'))
 
-@app.route("/petadd", methods=["GET", "POST"])
+@app.route("/pet-add", methods=["GET", "POST"])
+@login_required
 def pet_add():
-    return "pet add"
+    if request.method == "POST":
+        p = Pet()
+        p.name = request.form['name']
+        p.species_id = int(request.form['species'])
+        p.needed = request.form['needed']
+        p.owner_id = current_user.id
+        db.session.add(p)
+        db.session.commit()
+        return redirect(url_for('index'))
+    species = db.session.query(Species).all()
+    return render_template('pet_add.html', species=species)
 
-@app.route("/petedit", methods=["GET", "PATCH"])
-def pet_edit():
-    return "pet edit"
+@app.route("/pet-edit/<int:id>", methods=["GET", "POST"])
+@login_required
+def pet_edit(id):
+    pet = db.session.query(Pet).filter(Pet.id == id).first()
+    if not pet:
+        abort(404)
+    if current_user.id != pet.owner_id:
+        abort(403)
+    if request.method == 'POST':
+        pet.name = request.form['name']
+        pet.species_id = int(request.form['species'])
+        pet.needed = request.form['needed']
+        db.session.commit()
+        return redirect(url_for('pets_list'))
+    species = db.session.query(Species).all()
+    return render_template('pet_edit.html', pet=pet, species=species)
 
-@app.route("/petdonate", methods=["GET","POST"])
+@app.route("/pet-donate", methods=["GET","POST"])
+@login_required
 def pet_donate():
     return "Pet donated"
 
-@app.route("/petdonates", methods=["GET"])
+@app.route("/pet-donates", methods=["GET"])
 def pet_donates():
     return "Pet donated"
-
-@app.route("/my_donates", methods=["GET"])
-def my_donates():
-    return "my dontes"
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -67,10 +100,17 @@ def register():
     return render_template('register.html')
 
 @app.route("/logout", methods=["GET", "POST"])
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
 @app.route("/me", methods=["GET", "POST"])
+@login_required
 def my_profile():
     return "my profile"
+
+@app.route("/my-donates", methods=["GET"])
+@login_required
+def my_donates():
+    return "my dontes"

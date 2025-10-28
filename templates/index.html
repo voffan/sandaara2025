@@ -12,8 +12,8 @@
     {% endif %}
     {% if current_user.is_authenticated %}
     <form action="{{ url_for('logout') }}" method="post"><button type="submit">Выйти</button></form>
-    {% endif %}
     <a href="{{ url_for('admin.index') }}">Панель администратора</a>
+    {% endif %}
     <table id="pets">
         <thead>
             <tr>
@@ -24,18 +24,20 @@
                 <th>Нужно</th>
                 <th>Фото</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             {% for pet in pets %}
             <tr>
                 <td>{{ loop.index }}</td>
-                <td><a href="{{ url_for('pet_edit') }}">{{ pet.name }}</a></td>
+                <td><a href="{{ url_for('pet_edit', id=pet.id) }}">{{ pet.name }}</a></td>
                 <td>{{ pet.species.name }}</td>
                 <td>{{ pet.owner.fullname }}</td>
                 <td>{{ pet.needed }}</td>
                 <td> скоро будет </td>
                 <td><a href="{{ url_for('pet_donate') }}">Пожертвовать</a></td>
+                <td><form action="{{ url_for('pet_delete', id=pet.id) }}" method="post"><button type="submit">Удалить</button></form></td>
             </tr>
             {% endfor %}
         </tbody>

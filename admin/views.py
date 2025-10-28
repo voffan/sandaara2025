@@ -8,11 +8,13 @@ class UserView(ModelView):
     column_list = (
         'id',
         'fullname',
+        'nickname',
         'email',
         'address'
         )
     form_columns = [
         'fullname',
+        'nickname',
         'email',
         'address',
         'password'
@@ -20,6 +22,7 @@ class UserView(ModelView):
     column_details_list = (
         'id',
         'fullname',
+        'nickname',
         'email',
         'address',
         'password',
