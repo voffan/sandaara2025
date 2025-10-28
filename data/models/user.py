@@ -1,5 +1,5 @@
 from typing import List, TYPE_CHECKING
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from flask_login import UserMixin
 from data.models.base import BaseModel
@@ -18,6 +18,7 @@ class User(UserMixin, BaseModel):
     email: Mapped[str] = mapped_column(String(250), unique=True)
     password: Mapped[str] = mapped_column(String(250))
     address: Mapped[str] = mapped_column(String(150))
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
     pets:Mapped[List["Pet"]] = relationship("Pet", back_populates='owner')
     user_donates: Mapped[List["Donate"]] = relationship("Donate", back_populates='donator')

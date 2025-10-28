@@ -1,8 +1,18 @@
 from flask_admin.form import SecureForm
 from flask_admin.contrib.sqla import ModelView
+from flask_login import current_user
+from flask import redirect, url_for
 
 
-class UserView(ModelView):
+class AdminModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('login'))
+
+
+class UserView(AdminModelView):
     form_base_class = SecureForm
     can_view_details = True
     column_list = (
@@ -10,14 +20,16 @@ class UserView(ModelView):
         'fullname',
         'nickname',
         'email',
-        'address'
+        'address',
+        'is_admin'
         )
     form_columns = [
         'fullname',
         'nickname',
         'email',
         'address',
-        'password'
+        'password',
+        'is_admin'
     ]
     column_details_list = (
         'id',
@@ -27,11 +39,12 @@ class UserView(ModelView):
         'address',
         'password',
         'pets',
-        'user_donates'
+        'user_donates',
+        'is_admin'
         )
 
 
-class PetView(ModelView):
+class PetView(AdminModelView):
     form_base_class = SecureForm
     can_view_details = True
     form_columns=[
@@ -59,11 +72,11 @@ class PetView(ModelView):
         )
 
 
-class DonateView(ModelView):
+class DonateView(AdminModelView):
     form_base_class = SecureForm
     can_create = False
 
-class SpeciesView(ModelView):
+class SpeciesView(AdminModelView):
     form_base_class = SecureForm
     can_view_details = True
     form_columns = ['name']

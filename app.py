@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from data.models.pet import Pet
 from data.models.user import User
 from data.models.species import Species
+from data.models.donate import Donate
 from data.database import db
 from settings import app, login_manager
 
@@ -18,7 +19,7 @@ def index():
 @app.route("/pets", methods=["GET"])
 def pets_list():
     pets = db.session.query(Pet).all()
-    return render_template('index.html', pets=pets)
+    return render_template('pets_list.html', pets=pets)
 
 @app.route("/pet-delete/<int:id>", methods=["POST"])
 def pet_delete(id):
@@ -63,6 +64,14 @@ def pet_edit(id):
     species = db.session.query(Species).all()
     return render_template('pet_edit.html', pet=pet, species=species)
 
+@app.route("/pet-details/<int:id>", methods=["GET", "POST"])
+@login_required
+def pet_details(id):
+    pet = db.session.query(Pet).filter(Pet.id == id).first()
+    if not pet:
+        abort(404)
+    return render_template('pet_details.html', pet=pet)
+
 @app.route("/pet-donate/<int:id>", methods=["GET","POST"])
 @login_required
 def pet_donate(id):
@@ -70,11 +79,18 @@ def pet_donate(id):
     if not pet:
         abort(404)
     if request.method == 'POST':
-        pet.needed = request.form['needed']
+        d = Donate()
+        d.pet_id = pet.id
+        d.donator_id = current_user.id
+        d.value = request.form['amount']
+
+        pet.balance += request.form['amount']
+
+        db.session.add(d)
         db.session.commit()
         return redirect(url_for('pets_list'))
     species = db.session.query(Species).all()
-    return render_template('pet_edit.html', pet=pet, species=species)
+    return render_template('pet_donate.html', pet=pet, species=species)
 
 @app.route("/pet-donates", methods=["GET"])
 def pet_donates():

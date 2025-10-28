@@ -10,11 +10,7 @@
     <input type="text" name="name" value="{{ pet.name }}" readonly/>
 
     <label for="species">Вид</label>
-    <select name="species" disabled>
-        {% for item in species %}
-        <option value="{{ item.id }}" {% if item.id==pet.species_id %}selected{% endif %}>{{ item.name }}</option>
-        {% endfor %}
-    </select>
+    <input type="text" name="name" value="{{ pet.species.name }}" readonly/>
 
     <label for="needed">Нужно</label>
     <input type="number" name="needed" min="0" value="{{ pet.needed }}" readonly/>
@@ -25,18 +21,7 @@
     <label for="left">Осталось собрать</label>
     <input type="number" name="left" min="0" value="{% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %}" readonly/>
 
-    {% if current_user.id != pet.owner_id %}
-    {% if pet.needed > pet.balance %}
-    <form action="{{ url_for('pet_donate', id=pet.id) }}" method="post">
-        <label for="amount">Сумма</label>
-        <input type="number" name="amount" min="0" value="{{ pet.needed }}" required/>
-
-        <button type="submit">Отправить</button>
-    </form>
-    {% else %}
-    <h1>СБОР ОКОНЧЕН! ВСЕМ СПАСИБО!</h1>
-    {% endif %}
-    {% else %}
+    {% if current_user.id == pet.owner_id %}
     <a href="{{ url_for('pet_edit', id=pet.id) }}">Редактировать</a>
     {% endif %}
 </body>

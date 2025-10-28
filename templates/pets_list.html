@@ -12,7 +12,7 @@
     {% endif %}
     {% if current_user.is_authenticated %}
     <form action="{{ url_for('logout') }}" method="post"><button type="submit">Выйти</button></form>
-    <a href="{{ url_for('admin.index') }}">Панель администратора</a>
+    {% if current_user.is_admin %}<a href="{{ url_for('admin.index') }}">Панель администратора</a>{% endif %}
     {% endif %}
     <table id="pets">
         <thead>
@@ -22,6 +22,8 @@
                 <th>Вид</th>
                 <th>Владелец</th>
                 <th>Нужно</th>
+                <th>Собрано</th>
+                <th>Осталось собрать</th>
                 <th>Фото</th>
                 <th></th>
                 <th></th>
@@ -31,12 +33,14 @@
             {% for pet in pets %}
             <tr>
                 <td>{{ loop.index }}</td>
-                <td><a href="{{ url_for('pet_edit', id=pet.id) }}">{{ pet.name }}</a></td>
+                <td><a href="{{ url_for('pet_donate', id=pet.id) }}">{{ pet.name }}</a></td>
                 <td>{{ pet.species.name }}</td>
                 <td>{{ pet.owner.fullname }}</td>
                 <td>{{ pet.needed }}</td>
+                <td>{{ pet.balance }}</td>
+                <td>{% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %}</td>
                 <td> скоро будет </td>
-                <td><a href="{{ url_for('pet_donate') }}">Пожертвовать</a></td>
+                <td><a href="{{ url_for('pet_donate', id=pet.id) }}">Пожертвовать</a></td>
                 <td><form action="{{ url_for('pet_delete', id=pet.id) }}" method="post"><button type="submit">Удалить</button></form></td>
             </tr>
             {% endfor %}
