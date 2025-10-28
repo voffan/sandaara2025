@@ -63,10 +63,18 @@ def pet_edit(id):
     species = db.session.query(Species).all()
     return render_template('pet_edit.html', pet=pet, species=species)
 
-@app.route("/pet-donate", methods=["GET","POST"])
+@app.route("/pet-donate/<int:id>", methods=["GET","POST"])
 @login_required
-def pet_donate():
-    return "Pet donated"
+def pet_donate(id):
+    pet = db.session.query(Pet).filter(Pet.id == id).first()
+    if not pet:
+        abort(404)
+    if request.method == 'POST':
+        pet.needed = request.form['needed']
+        db.session.commit()
+        return redirect(url_for('pets_list'))
+    species = db.session.query(Species).all()
+    return render_template('pet_edit.html', pet=pet, species=species)
 
 @app.route("/pet-donates", methods=["GET"])
 def pet_donates():
