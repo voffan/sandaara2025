@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, request, abort
 from flask_login import login_user, logout_user, login_required, current_user
+from sqlalchemy.orm import joinedload
 from data.models.pet import Pet
 from data.models.user import User
 from data.models.species import Species
@@ -17,20 +18,25 @@ def index():
     return redirect(url_for('pets_list'))
 
 @app.route("/pets", methods=["GET"])
-def pets_list():
+@app.route("/pets/<msg>", methods=["GET"])
+def pets_list(msg=None):
     pets = db.session.query(Pet).all()
-    return render_template('pets_list.html', pets=pets)
+    return render_template('pets_list.html', pets=pets, msg=msg)
 
 @app.route("/pet-delete/<int:id>", methods=["POST"])
 def pet_delete(id):
-    pet = db.session.query(Pet).filter(Pet.id == id).first()
+    msg = ""
+    pet = db.session.query(Pet).filter(Pet.id == id).options(joinedload(Pet.pet_donates)).first()
     if not pet:
-        abort(404)
-    if current_user.id != pet.owner_id:
-        abort(403)
-    db.session.delete(pet)
-    db.session.commit()
-    return redirect(url_for('pets_list'))
+        msg += "Питомец не найден!"
+    elif current_user.id != pet.owner_id:
+        msg += "Вы можете редактировать только своих питомецев!"
+    elif len(pet.pet_donates) > 0:
+        msg += "Питомецев, у которых есть пожертвования нельзя удалить!"
+    else:
+        db.session.delete(pet)
+        db.session.commit()
+    return redirect(url_for('pets_list', msg=msg))
 
 @app.route("/pet-add", methods=["GET", "POST"])
 @login_required
@@ -43,7 +49,7 @@ def pet_add():
         p.owner_id = current_user.id
         db.session.add(p)
         db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('pets_list'))
     species = db.session.query(Species).all()
     return render_template('pet_add.html', species=species)
 
@@ -52,9 +58,11 @@ def pet_add():
 def pet_edit(id):
     pet = db.session.query(Pet).filter(Pet.id == id).first()
     if not pet:
-        abort(404)
-    if current_user.id != pet.owner_id:
-        abort(403)
+        msg = "Питомец не найден!"
+        return redirect(url_for('pets_list', msg=msg))
+    elif current_user.id != pet.owner_id:
+        msg = "Вы можете редактировать только своих питомецев!"
+        return redirect(url_for('pets_list', msg=msg))
     if request.method == 'POST':
         pet.name = request.form['name']
         pet.species_id = int(request.form['species'])
@@ -77,7 +85,11 @@ def pet_details(id):
 def pet_donate(id):
     pet = db.session.query(Pet).filter(Pet.id == id).first()
     if not pet:
-        abort(404)
+        msg = "Питомец не найден!"
+        return redirect(url_for('pets_list', msg=msg))
+    if current_user.id == pet.owner_id:
+        msg = "Вы не можете пожертвовать деньги на своих питомецев!"
+        return redirect(url_for('pets_list', msg=msg))
     if request.method == 'POST':
         d = Donate()
         d.pet_id = pet.id
@@ -104,7 +116,7 @@ def login():
         user = db.session.query(User).filter(User.email == email).first()
         if user and user.password == pwd:
             login_user(user)
-            return redirect(url_for('index'))
+            return redirect(url_for('pets_list'))
         else:
             pass
     return render_template('login.html')
@@ -127,7 +139,7 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('pets_list'))
 
 @app.route("/me", methods=["GET", "POST"])
 @login_required
