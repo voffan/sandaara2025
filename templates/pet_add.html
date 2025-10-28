@@ -1,26 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
-</head>
-<body>
-    <form action="{{ url_for('pet_add') }}" method="post">
-        <label for="name">Кличка</label>
-        <input type="text" name="name" required/>
+{% extends 'base.html' %}
 
-        <label for="species">Вид</label>
-        <select name="species" required>
-            {% for item in species %}
-            <option value="{{ item.id }}" {% if loop.index==1 %}selected{% endif %}>{{ item.name }}</option>
-            {% endfor %}
-        </select>
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form action="{{ url_for('pet_add') }}" method="post">
+                <label for="name" class="form-label">Кличка</label>
+                <input type="text" class="form-control" name="name" required/>
 
-        <label for="needed">Нужно</label>
-        <input type="number" name="needed" min="0" required/>
+                <label for="species" class="form-label">Вид</label>
+                <select name="species" class="form-control" required>
+                    {% for item in species %}
+                    <option value="{{ item.id }}" {% if loop.index==1 %}selected{% endif %}>{{ item.name }}</option>
+                    {% endfor %}
+                </select>
 
-        <button type="submit">Добавить</button>
-    </form>
-</body>
-</html>
+                <label for="needed" class="form-label">Нужно</label>
+                <input type="number" class="form-control" name="needed" min="0" required/>
+
+                <button class="btn btn-primary" type="submit">Добавить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

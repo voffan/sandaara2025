@@ -1,26 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
-</head>
-<body>
-    <form action="{{ url_for('pet_edit', id=pet.id) }}" method="post">
-        <label for="name">Кличка</label>
-        <input type="text" name="name" value="{{ pet.name }}" required/>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form action="{{ url_for('pet_edit', id=pet.id) }}" method="post">
+                <label class="form-label" for="name">Кличка</label>
+                <input class="form-control" type="text" name="name" value="{{ pet.name }}" required/>
 
-        <label for="species">Вид</label>
-        <select name="species" required>
-            {% for item in species %}
-            <option value="{{ item.id }}" {% if item.id==pet.species_id %}selected{% endif %}>{{ item.name }}</option>
-            {% endfor %}
-        </select>
+                <label class="form-label" for="species">Вид</label>
+                <select class="form-control" name="species" required>
+                    {% for item in species %}
+                    <option value="{{ item.id }}" {% if item.id==pet.species_id %}selected{% endif %}>{{ item.name }}</option>
+                    {% endfor %}
+                </select>
 
-        <label for="needed">Нужно</label>
-        <input type="number" name="needed" min="0" value="{{ pet.needed }}" required/>
+                <label class="form-label" for="needed">Нужно</label>
+                <input class="form-control" type="number" name="needed" min="0" value="{{ pet.needed }}" required/>
 
-        <button type="submit">Сохранить</button>
-    </form>
-</body>
-</html>
+                <button class="btn btn-primary" type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

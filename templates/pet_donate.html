@@ -1,43 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
-</head>
-<body>
-    <label for="name">Кличка</label>
-    <input type="text" name="name" value="{{ pet.name }}" readonly/>
+{% extends 'base.html' %}
+{% block content %}
 
-    <label for="species">Вид</label>
-    <select name="species" disabled>
-        {% for item in species %}
-        <option value="{{ item.id }}" {% if item.id==pet.species_id %}selected{% endif %}>{{ item.name }}</option>
-        {% endfor %}
-    </select>
 
-    <label for="needed">Нужно</label>
-    <input type="number" name="needed" min="0" value="{{ pet.needed }}" readonly/>
-
-    <label for="balance">Собрано</label>
-    <input type="number" name="balance" min="0" value="{{ pet.balance }}" readonly/>
-
-    <label for="left">Осталось собрать</label>
-    <input type="number" name="left" min="0" value="{% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %}" readonly/>
-
-    {% if current_user.id != pet.owner_id %}
-    {% if pet.needed > pet.balance %}
-    <form action="{{ url_for('pet_donate', id=pet.id) }}" method="post">
-        <label for="amount">Сумма</label>
-        <input type="number" name="amount" min="0" value="{{ pet.needed }}" required/>
-
-        <button type="submit">Отправить</button>
-    </form>
-    {% else %}
-    <h1>СБОР ОКОНЧЕН! ВСЕМ СПАСИБО!</h1>
-    {% endif %}
-    {% else %}
+<div class="card">
+  <h5 class="card-header">{{ pet.name }}</h5>
+  <div class="card-body">
+    <h5 class="card-title">Осталось собрать: {% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %} руб</h5>
+    <p class="card-text">
+        {{ pet.species.name }} по кличке {{ pet.name }} требуется ваша помощь!<br/>
+        Необходимо собрать {{ pet.needed }} руб. <br/>
+        На данный момент собрано {{ pet.balance }} руб.<br/>
+        <b>Осталось собрать: {% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %} руб</b>
+    </p>
+    {% if current_user.id == pet.owner_id %}
     <a href="{{ url_for('pet_edit', id=pet.id) }}">Редактировать</a>
+    {% else %}
+        {% if pet.needed > pet.balance %}
+        <form action="{{ url_for('pet_donate', id=pet.id) }}" method="post">
+            <label class="form-label" for="amount">Сумма</label>
+            <input class="form-control" type="number" name="amount" min="0" value="{{ pet.needed }}" required/>
+
+            <button class="btn btn-primary" type="submit">Отправить</button>
+        </form>
+        {% else %}
+        <h1>СБОР ОКОНЧЕН! ВСЕМ СПАСИБО!</h1>
+        {% endif %}
     {% endif %}
-</body>
-</html>
+  </div>
+</div>
+
+{% endblock %}

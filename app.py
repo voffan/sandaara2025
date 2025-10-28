@@ -84,7 +84,7 @@ def pet_donate(id):
         d.donator_id = current_user.id
         d.value = request.form['amount']
 
-        pet.balance += request.form['amount']
+        pet.balance += int(request.form['amount'])
 
         db.session.add(d)
         db.session.commit()

@@ -1,28 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
-</head>
-<body>
-    <label for="name">Кличка</label>
-    <input type="text" name="name" value="{{ pet.name }}" readonly/>
+{% extends 'base.html' %}
+{% block content %}
 
-    <label for="species">Вид</label>
-    <input type="text" name="name" value="{{ pet.species.name }}" readonly/>
-
-    <label for="needed">Нужно</label>
-    <input type="number" name="needed" min="0" value="{{ pet.needed }}" readonly/>
-
-    <label for="balance">Собрано</label>
-    <input type="number" name="balance" min="0" value="{{ pet.balance }}" readonly/>
-
-    <label for="left">Осталось собрать</label>
-    <input type="number" name="left" min="0" value="{% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %}" readonly/>
-
+<div class="card">
+  <h5 class="card-header">{{ pet.name }}</h5>
+  <div class="card-body">
+    <h5 class="card-title">Осталось собрать: {% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %} руб</h5>
+    <p class="card-text">
+        {{ pet.species.name }} по кличке {{ pet.name }} требуется ваша помощь!<br/>
+        Необходимо собрать {{ pet.needed }} руб. <br/>
+        На данный момент собрано {{ pet.balance }} руб.
+        Осталось собрать: {% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %} руб
+    </p>
     {% if current_user.id == pet.owner_id %}
     <a href="{{ url_for('pet_edit', id=pet.id) }}">Редактировать</a>
     {% endif %}
-</body>
-</html>
+  </div>
+</div>
+    
+{% endblock %}

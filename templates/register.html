@@ -1,23 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
-</head>
-<body>
-    <form action="{{ url_for('register') }}" method="post">
-        <label for="fullname">ФИО</label>
-        <input type="text" name="fullname"/>
-        <label for="nickname">Псевдоним</label>
-        <input type="text" name="nickname"/>
-        <label for="address">Адрес</label>
-        <input type="text" name="address"/>
-        <label for="email">e-mail</label>
-        <input type="text" name="email"/>
-        <label for="password">Пароль</label>
-        <input type="password" name="password"/>
-        <button type="submit">Зарегистрироваться</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg">
+            <h3>Регистрация в системе</h3>
+            <form action="{{ url_for('register') }}" method="post">
+                <label class="form-label" for="fullname">ФИО</label>
+                <input class="form-control" type="text" name="fullname"/>
+                <label class="form-label" for="nickname">Псевдоним</label>
+                <input class="form-control" type="text" name="nickname"/>
+                <label class="form-label" for="address">Адрес</label>
+                <input class="form-control" type="text" name="address"/>
+                <label class="form-label" for="email">e-mail</label>
+                <input class="form-control" type="text" name="email"/>
+                <label class="form-label" for="password">Пароль</label>
+                <input class="form-control" type="password" name="password"/>
+                <button class="btn btn-primary" type="submit">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
