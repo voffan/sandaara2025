@@ -1,6 +1,7 @@
 from typing import List, TYPE_CHECKING
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from flask_login import UserMixin
 from data.models.base import BaseModel
 
 if TYPE_CHECKING:    
@@ -8,11 +9,12 @@ if TYPE_CHECKING:
     from data.models.donate import Donate
 
 
-class User(BaseModel):
+class User(UserMixin, BaseModel):
     
     __tablename__ = 'users'
 
     fullname: Mapped[str] = mapped_column(String(250))
+    nickname: Mapped[str] = mapped_column(String(50), unique=True)
     email: Mapped[str] = mapped_column(String(250), unique=True)
     password: Mapped[str] = mapped_column(String(250))
     address: Mapped[str] = mapped_column(String(150))

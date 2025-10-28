@@ -2,6 +2,7 @@ from flask import Flask
 from data.database import db, migrate
 from flask_admin import Admin
 from flask_admin.base import Bootstrap4Theme
+from flask_login import LoginManager
 from data.models.pet import Pet
 from data.models.user import User
 from data.models.donate import Donate
@@ -22,3 +23,6 @@ admin.add_view(UserView(User, db.session))
 admin.add_view(PetView(Pet, db.session))
 admin.add_view(DonateView(Donate, db.session))
 admin.add_view(SpeciesView(Species, db.session))
+
+login_manager = LoginManager()
+login_manager.init_app(app)
