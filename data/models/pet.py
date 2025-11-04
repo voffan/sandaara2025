@@ -16,6 +16,7 @@ class Pet(BaseModel):
     name: Mapped[str] = mapped_column(String(250))
     needed: Mapped[int] = mapped_column(Integer)
     balance: Mapped[int] = mapped_column(Integer, default=0)
+    file: Mapped[str] = mapped_column(String(250), server_default="", default="")
 
     species_id: Mapped[int] = mapped_column(ForeignKey("species.id"))
     species: Mapped["Species"] = relationship('Species', back_populates='animals')

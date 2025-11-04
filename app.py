@@ -1,3 +1,4 @@
+import pathlib
 from flask import render_template, redirect, url_for, request, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.orm import joinedload
@@ -7,6 +8,7 @@ from data.models.species import Species
 from data.models.donate import Donate
 from data.database import db
 from settings import app, login_manager
+from utils.filename import allowed_file
 
 
 @login_manager.user_loader
@@ -42,11 +44,17 @@ def pet_delete(id):
 @login_required
 def pet_add():
     if request.method == "POST":
+        if 'image' not in request.files or request.files['image'].filename == '' or not allowed_file(request.files['image'].filename):
+            filename = 'noimage.png'
+        else:
+            filename = request.files['image'].filename
+            request.files['image'].save((pathlib.Path(app.config['UPLOAD_FOLDER']) / filename).resolve())
         p = Pet()
         p.name = request.form['name']
         p.species_id = int(request.form['species'])
         p.needed = request.form['needed']
         p.owner_id = current_user.id
+        p.file = filename
         db.session.add(p)
         db.session.commit()
         return redirect(url_for('pets_list'))

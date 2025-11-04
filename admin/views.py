@@ -51,13 +51,15 @@ class PetView(AdminModelView):
         'name',
         'species',
         'needed',
-        'owner'
+        'owner',
+        'file'
     ]
     column_details_list = (
         'id',
         'name',
         'species',
         'owner',
+        'file',
         'needed',
         'balance',
         'pet_donates'
@@ -68,7 +70,8 @@ class PetView(AdminModelView):
         'species',
         'owner',
         'needed',
-        'balance'
+        'balance',
+        'file'
         )
 
 

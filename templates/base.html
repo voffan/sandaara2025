@@ -37,7 +37,7 @@
                         <a class="btn btn-primary" href="{{ url_for('register') }}">Зарегистрироваться</a>
                         <a class="btn btn-primary" href="{{ url_for('login') }}">Войти</a>
                         {% else %}
-                        <form class="d-flex" action="{{ url_for('logout') }}" method="post"><button class="btn btn-primary ms-auto" type="submit">Выйти</button></form>
+                        <form class="d-flex" action="{{ url_for('logout') }}" method="post"><label>Здравствуйте, {{ current_user.nickname }}</label><button class="btn btn-primary ms-auto" type="submit">Выйти</button></form>
                         {% endif %}
                     </div>
                 </div>

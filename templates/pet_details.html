@@ -4,6 +4,7 @@
 <div class="card">
   <h5 class="card-header">{{ pet.name }}</h5>
   <div class="card-body">
+    <img src="{{ url_for('static', filename='images/pets/'+pet.file) }}" class="img-fluid w-25">
     <h5 class="card-title">Осталось собрать: {% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %} руб</h5>
     <p class="card-text">
         {{ pet.species.name }} по кличке {{ pet.name }} требуется ваша помощь!<br/>
@@ -11,8 +12,12 @@
         На данный момент собрано {{ pet.balance }} руб.
         Осталось собрать: {% if pet.needed > pet.balance %}{{pet.needed - pet.balance}}{% else %}0{% endif %} руб
     </p>
-    {% if current_user.id == pet.owner_id %}
-    <a href="{{ url_for('pet_edit', id=pet.id) }}">Редактировать</a>
+    {% if current_user.id != pet.owner_id %}
+    {% if pet.balance < pet.needed %}
+    <a class="btn btn-primary" href="{{ url_for('pet_donate', id=pet.id) }}">Пожертвовать</a>
+    {% endif %}
+    {% else %}
+    <a class="btn btn-primary" href="{{ url_for('pet_edit', id=pet.id) }}">Редактировать</a>
     {% endif %}
   </div>
 </div>

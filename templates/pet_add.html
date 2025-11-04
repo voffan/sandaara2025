@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <form action="{{ url_for('pet_add') }}" method="post">
+            <form action="{{ url_for('pet_add') }}" method="post" enctype="multipart/form-data">
                 <label for="name" class="form-label">Кличка</label>
                 <input type="text" class="form-control" name="name" required/>
 
@@ -17,6 +17,9 @@
 
                 <label for="needed" class="form-label">Нужно</label>
                 <input type="number" class="form-control" name="needed" min="0" required/>
+
+                <label for="image" class="form-label">Фотография</label>
+                <input type="file" class="form-control" name="image">
 
                 <button class="btn btn-primary" type="submit">Добавить</button>
             </form>

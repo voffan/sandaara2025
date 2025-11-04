@@ -14,6 +14,9 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pets.db"
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 app.config['SECRET_KEY'] = 'your-random-secret-key'
+app.config['UPLOAD_FOLDER'] = r'static\images\pets'
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 db.init_app(app)
 migrate.init_app(app, db)
