@@ -1,4 +1,5 @@
 import pathlib
+from urllib.parse import urlparse
 from flask import render_template, redirect, url_for, request, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.orm import joinedload
@@ -10,6 +11,14 @@ from data.database import db
 from settings import app, login_manager
 from utils.filename import allowed_file
 
+
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    target_url = urlparse(target)
+    
+    return ((target_url.scheme in ('http', 'https') and
+             target_url.netloc == ref_url.netloc) or
+            (target_url.netloc == '' or target_url.scheme == ''))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -72,7 +81,13 @@ def pet_edit(id):
         msg = "Вы можете редактировать только своих питомецев!"
         return redirect(url_for('pets_list', msg=msg))
     if request.method == 'POST':
+        if 'image' not in request.files or request.files['image'].filename == '' or not allowed_file(request.files['image'].filename):
+            filename = 'noimage.png'
+        else:
+            filename = request.files['image'].filename
+            request.files['image'].save((pathlib.Path(app.config['UPLOAD_FOLDER']) / filename).resolve())
         pet.name = request.form['name']
+        pet.file = filename
         pet.species_id = int(request.form['species'])
         pet.needed = request.form['needed']
         db.session.commit()
@@ -81,7 +96,6 @@ def pet_edit(id):
     return render_template('pet_edit.html', pet=pet, species=species)
 
 @app.route("/pet-details/<int:id>", methods=["GET", "POST"])
-@login_required
 def pet_details(id):
     pet = db.session.query(Pet).filter(Pet.id == id).first()
     if not pet:
@@ -124,10 +138,14 @@ def login():
         user = db.session.query(User).filter(User.email == email).first()
         if user and user.password == pwd:
             login_user(user)
-            return redirect(url_for('pets_list'))
+            next_url = request.form.get('next_url')
+            if not next_url or not is_safe_url(next_url):
+                return redirect(url_for('pets_list'))
+            else:
+                return redirect(next_url)
         else:
             pass
-    return render_template('login.html')
+    return render_template('login.html', next_url=request.args.get('next'))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

@@ -3,7 +3,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <form action="{{ url_for('pet_edit', id=pet.id) }}" method="post">
+            <form action="{{ url_for('pet_edit', id=pet.id) }}" method="post" enctype="multipart/form-data">
                 <label class="form-label" for="name">Кличка</label>
                 <input class="form-control" type="text" name="name" value="{{ pet.name }}" required/>
 
@@ -16,6 +16,9 @@
 
                 <label class="form-label" for="needed">Нужно</label>
                 <input class="form-control" type="number" name="needed" min="0" value="{{ pet.needed }}" required/>
+
+                <label for="image" class="form-label">Фотография</label>
+                <input type="file" class="form-control" name="image">
 
                 <button class="btn btn-primary" type="submit">Сохранить</button>
             </form>
